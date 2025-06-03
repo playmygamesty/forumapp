@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ post.title if not new else "New Post" }}</h2>
+{% if new %}
+  <form method="post">{{ form.hidden_tag() }}
+    <div>{{ form.title.label }} {{ form.title() }}</div>
+    <div>{{ form.body.label }} {{ form.body(rows=5) }}</div>
+    <div>{{ form.submit() }}</div>
+  </form>
+{% else %}
+  <div><b>Author:</b> <a href="{{ url_for('profile', username=author.username) }}">{{ author.username }}</a></div>
+  <div><b>Posted:</b> {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+  <hr>
+  <div>{{ post.body }}</div>
+  <hr>
+  <h4>Replies</h4>
+  {% for reply in replies %}
+    <div class="well">
+      <b>{{ reply.author_id|user_from_id }}</b> <i>{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</i>
+      <div>{{ reply.body }}</div>
+    </div>
+  {% endfor %}
+  {% if current_user.is_authenticated %}
+    <form method="post">{{ form.hidden_tag() }}
+      <div>{{ form.body.label }} {{ form.body(rows=3) }}</div>
+      <div>{{ form.submit() }}</div>
+    </form>
+  {% else %}
+    <div>Please <a href="{{ url_for('login') }}">login</a> to reply.</div>
+  {% endif %}
+{% endif %}
+{% endblock %}
