@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ user.username }}'s Profile</h2>
+{% if user.is_admin() %}<span class="label label-danger">Admin</span>{% endif %}
+{% if user.is_bot() %}<span class="label label-info">Bot</span>{% endif %}
+<p>{{ user.bio }}</p>
+{% if user.id == current_user.id %}
+  <form method="post">{{ form.hidden_tag() }}
+    <div>{{ form.bio.label }} {{ form.bio(rows=3) }}</div>
+    <div>{{ form.submit() }}</div>
+  </form>
+{% endif %}
+{% endblock %}
