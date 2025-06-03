@@ -43,6 +43,9 @@ def setup_db():
             db.session.add(bot)
         db.session.commit()
 
+# Ensure database setup runs on every start (both dev and prod)
+setup_db()
+
 @app.route('/')
 def index():
     posts = Post.query.order_by(Post.created_at.desc()).all()
@@ -157,5 +160,4 @@ def admin():
     return render_template('admin.html', users=users, posts=posts)
 
 if __name__ == '__main__':
-    setup_db()
     app.run(debug=True)
