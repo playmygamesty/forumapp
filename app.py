@@ -11,6 +11,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
+@app.template_filter('user_from_id')
+def user_from_id(user_id):
+    user = User.query.get(user_id)
+    return user.username if user else 'Unknown'
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
