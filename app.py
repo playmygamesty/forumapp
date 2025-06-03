@@ -30,18 +30,18 @@ def load_user(user_id):
         return UserLogin(user)
     return None
 
-@app.before_first_request
-def setup():
-    db.create_all()
-    if not User.query.filter_by(username='admin').first():
-        admin = User(username='admin', role='admin')
-        admin.set_password('admin')
-        db.session.add(admin)
-    if not User.query.filter_by(username='antiphish').first():
-        bot = User(username='antiphish', role='bot')
-        bot.set_password('!!!') # Not used
-        db.session.add(bot)
-    db.session.commit()
+def setup_db():
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(username='admin').first():
+            admin = User(username='admin', role='admin')
+            admin.set_password('admin')
+            db.session.add(admin)
+        if not User.query.filter_by(username='antiphish').first():
+            bot = User(username='antiphish', role='bot')
+            bot.set_password('!!!') # Not used
+            db.session.add(bot)
+        db.session.commit()
 
 @app.route('/')
 def index():
@@ -89,7 +89,7 @@ def register():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, body=form.body.data, author_id=current_user.id)
+        post = Post(title=form.title.data, body=form.body.data, author_id=current_user.user.id)
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('index'))
@@ -101,7 +101,7 @@ def show_post(post_id):
     author = User.query.get(post.author_id)
     form = ReplyForm()
     if form.validate_on_submit() and current_user.is_authenticated:
-        reply = Reply(body=form.body.data, author_id=current_user.id, post_id=post_id)
+        reply = Reply(body=form.body.data, author_id=current_user.user.id, post_id=post_id)
         db.session.add(reply)
         db.session.commit()
         # AI bot check
@@ -129,7 +129,7 @@ def users():
 def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     form = ProfileForm(obj=user)
-    if user.id == current_user.id and form.validate_on_submit():
+    if user.id == current_user.user.id and form.validate_on_submit():
         user.bio = form.bio.data
         db.session.commit()
         flash('Profile updated.')
@@ -157,4 +157,5 @@ def admin():
     return render_template('admin.html', users=users, posts=posts)
 
 if __name__ == '__main__':
+    setup_db()
     app.run(debug=True)
