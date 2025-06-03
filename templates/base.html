@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anti-Phishing Forum</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('index') }}">Anti-Phishing Forum</a>
+      <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('users') }}">Users</a></li>
+          <li><a href="{{ url_for('profile', username=current_user.user.username) }}">Profile</a></li>
+          <li><a href="{{ url_for('settings') }}">Settings</a></li>
+          {% if current_user.is_admin() %}
+            <li><a href="{{ url_for('admin') }}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+          <li><a href="{{ url_for('register') }}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+  <div class="container">{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-info">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}</div>
+</body>
+</html>
