@@ -48,7 +48,6 @@ def setup_db():
             db.session.add(bot)
         db.session.commit()
 
-# Ensure database setup runs on every start (both dev and prod)
 setup_db()
 
 @app.route('/')
@@ -115,7 +114,6 @@ def show_post(post_id):
         # AI bot check
         if '@antiphish run check' in form.body.data:
             url = form.body.data.split('@antiphish run check', 1)[1].strip()
-            # Simulate AI check (replace with API call to Replit AI)
             ai_reply = Reply(
                 body=f"[AntiPhish Bot] Safety report for {url}:\nThis is a placeholder response.",
                 author_id=User.query.filter_by(username='antiphish').first().id,
@@ -142,7 +140,9 @@ def profile(username):
         db.session.commit()
         flash('Profile updated.')
         return redirect(url_for('profile', username=username))
-    return render_template('profile.html', user=user, form=form)
+    # Format join date as M/D/Y (use %m/%d/%Y for cross-platform compatibility)
+    join_date = user.created_at.strftime('%m/%d/%Y') if user.created_at else 'Unknown'
+    return render_template('profile.html', user=user, form=form, join_date=join_date)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
