@@ -10,6 +10,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     role = db.Column(db.String(16), default='user')
     bio = db.Column(db.Text, default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     # Add extra fields as needed
 
     def set_password(self, password):
