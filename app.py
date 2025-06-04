@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session, abort
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required, UserMixin
 from models import db, User, Post, Reply
 from forms import LoginForm, RegisterForm, PostForm, ReplyForm, ProfileForm
@@ -10,6 +11,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'devsecret')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///forum.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+migrate = Migrate(app, db)
 
 @app.template_filter('user_from_id')
 def user_from_id(user_id):
